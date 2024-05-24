@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+    <style>
+        .button-container {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        .button {
+            padding: 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #005f6b;
+        }
+    </style>
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+    <div class="button-container">
+        <button class="button" onclick="showDino('first')">First</button>
+        <button class="button" onclick="showDino('second')">Second</button>
+        <button class="button" onclick="showDino('third')">Third</button>
+        <button class="button" onclick="showDino('all')">All</button>
+    </div>
+
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        loading-screen="enabled: false;"
+        renderer="logarithmicDepthBuffer: true;"
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+        id="scene"
+        embedded
+        gesture-detector
+    >
+        <a-assets>
+            <a-asset-item
+                id="dino1-asset"
+                src="assets/dinosaur/dino1.glb"
+            ></a-asset-item>
+            <a-asset-item
+                id="dino2-asset"
+                src="assets/dinosaur/dino2.glb"
+            ></a-asset-item>
+            <a-asset-item
+                id="dino3-asset"
+                src="assets/dinosaur/dino3.gltf"
+            ></a-asset-item>
+            <audio id="bark-sound" src="assets/sounds/bark.mp3"></audio>
+        </a-assets>
+
+        <a-marker
+            id="markerA"
+            type="pattern"
+            preset="custom"
+            url="assets/markers/marker1.patt"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+        >
+            <a-entity
+                id="dino1-model"
+                scale="0.5 0.5 0.5"
+                animation-mixer="loop: repeat"
+                gltf-model="#dino1-asset"
+                class="clickable"
+                gesture-handler
+            ></a-entity>
+        </a-marker>
+
+        <a-marker
+            id="markerB"
+            type="pattern"
+            preset="custom"
+            url="assets/markers/marker2.patt"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+        >
+            <a-entity
+                id="dino2-model"
+                scale="0.5 0.5 0.5"
+                animation-mixer="loop: repeat"
+                gltf-model="#dino2-asset"
+                class="clickable"
+                gesture-handler
+                sound="src: #bark-sound; autoplay: false;"
+            ></a-entity>
+        </a-marker>
+
+        <a-marker
+            id="markerC"
+            type="pattern"
+            preset="custom"
+            url="assets/markers/marker3.patt"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+        >
+            <a-entity
+                id="dino3-model"
+                scale="0.5 0.5 0.5"
+                animation-mixer="loop: repeat"
+                gltf-model="#dino3-asset"
+                class="clickable"
+                gesture-handler
+            ></a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        function showDino(dino) {
+            const dino1 = document.getElementById('dino1-model');
+            const dino2 = document.getElementById('dino2-model');
+            const dino3 = document.getElementById('dino3-model');
+            const barkSound = document.getElementById('bark-sound');
+            
+            dino1.setAttribute('visible', false);
+            dino2.setAttribute('visible', false);
+            dino3.setAttribute('visible', false);
+            
+            if (dino === 'first') {
+                dino1.setAttribute('visible', true);
+            } else if (dino === 'second') {
+                dino2.setAttribute('visible', true);
+                barkSound.play();
+            } else if (dino === 'third') {
+                dino3.setAttribute('visible', true);
+            } else if (dino === 'all') {
+                dino1.setAttribute('visible', true);
+                dino2.setAttribute('visible', true);
+                dino3.setAttribute('visible', true);
+                barkSound.play();
+            }
+        }
+
+        // Initially show all dinosaurs
+        showDino('all');
+    </script>
+</body>
+</html>
